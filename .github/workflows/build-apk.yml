@@ -16,43 +16,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Java JDK 17
-        uses: actions/setup-java@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Make Gradlew Executable
-        run: chmod +x ./gradlew
-
-      - name: Build APKs with Gradle Wrapper
+      - name: Setup Android SDK Environment & Licenses
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon
-          ./gradlew assembleRelease --stacktrace --no-daemon || true
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
 
-      - name: Prepare APK Release Files
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Initialize Gradle Wrapper & Verify Toolchain
+        run: |
+          gradle wrapper --gradle-version 8.7 --distribution-type bin
+          chmod +x ./gradlew
+
+      - name: Build Android APKs
+        run: |
+          ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
+
+      - name: Collect APKs for Release
+        if: always()
         run: |
           mkdir -p release-apks
-          find app/build/outputs/apk -name "*.apk" -exec cp {} release-apks/ \;
+          find app/build/outputs/apk -type f -name "*.apk" -exec cp {} release-apks/ \;
+          echo "Collected APK outputs:"
           ls -la release-apks/
 
-      - name: Upload APKs to Artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: RealityEngine-APK-Installers
           path: release-apks/*.apk
           if-no-files-found: error
 
-      - name: Publish Official GitHub Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
-        if: always()
+        if: success()
         with:
           tag_name: "v1.0.0-build-${{ github.run_number }}"
           name: "Reality Engine APK - Release #${{ github.run_number }}"
