@@ -1,0 +1,6 @@
+{
+  "name": "Reality Engine - Android Dialer Architect & Live Suite",
+  "description": "Native Android Default Dialer architecture, Kotlin source suite, and live simulation engine with Deepgram STT, Groq LLaMA-3.1 live tactics, SQLCipher, and Shizuku IPC.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

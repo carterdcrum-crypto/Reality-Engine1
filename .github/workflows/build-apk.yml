@@ -1,0 +1,78 @@
+name: Build & Release Android APK
+
+on:
+  push:
+    branches: [ "**" ]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Signed Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Grant execute permission for gradlew
+        run: |
+          if [ -f gradlew ]; then
+            chmod +x gradlew
+          fi
+
+      - name: Build Signed APKs
+        run: |
+          gradle assembleDebug assembleRelease --stacktrace --no-daemon
+
+      - name: Prepare APK Release Files
+        run: |
+          mkdir -p release-apks
+          # Copy and rename debug & release APKs with clean names
+          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            cp app/build/outputs/apk/release/app-release.apk release-apks/RealityEngine-release.apk
+          fi
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk release-apks/RealityEngine-debug.apk
+          fi
+          # Fallback copy for any other APK generated
+          find app/build/outputs/apk -name "*.apk" -exec cp {} release-apks/ \;
+          ls -la release-apks/
+
+      - name: Upload APKs to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: RealityEngine-APK-Installers
+          path: release-apks/*.apk
+          if-no-files-found: error
+
+      - name: Publish Official GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v1.0.0-${{ github.run_number }}"
+          name: "Reality Engine APK - Build #${{ github.run_number }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: release-apks/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
