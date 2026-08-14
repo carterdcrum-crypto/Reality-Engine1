@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Reality Engine</string>
+    <string name="default_notification_channel_id">reality_engine_notifications</string>
+    <string name="call_service_notification_title">Reality Engine Active</string>
+    <string name="call_service_notification_text">Tactical intelligence stream connected</string>
+    <string name="overlay_service_notification_title">HUD Overlay Running</string>
+    <string name="overlay_service_notification_text">Live call analytics and coaching enabled</string>
+</resources>

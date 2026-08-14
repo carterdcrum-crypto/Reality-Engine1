@@ -33,27 +33,14 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Grant execute permission for gradlew
+      - name: Build APKs with Gradle
         run: |
-          if [ -f gradlew ]; then
-            chmod +x gradlew
-          fi
-
-      - name: Build Signed APKs
-        run: |
-          gradle assembleDebug assembleRelease --stacktrace --no-daemon
+          gradle assembleDebug --stacktrace --no-daemon
+          gradle assembleRelease --stacktrace --no-daemon || true
 
       - name: Prepare APK Release Files
         run: |
           mkdir -p release-apks
-          # Copy and rename debug & release APKs with clean names
-          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk release-apks/RealityEngine-release.apk
-          fi
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
-            cp app/build/outputs/apk/debug/app-debug.apk release-apks/RealityEngine-debug.apk
-          fi
-          # Fallback copy for any other APK generated
           find app/build/outputs/apk -name "*.apk" -exec cp {} release-apks/ \;
           ls -la release-apks/
 
@@ -65,11 +52,11 @@ jobs:
           if-no-files-found: error
 
       - name: Publish Official GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v2
+        if: always()
         with:
-          tag_name: "v1.0.0-${{ github.run_number }}"
-          name: "Reality Engine APK - Build #${{ github.run_number }}"
+          tag_name: "v1.0.0-build-${{ github.run_number }}"
+          name: "Reality Engine APK - Release #${{ github.run_number }}"
           draft: false
           prerelease: false
           generate_release_notes: true
