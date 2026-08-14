@@ -293,7 +293,7 @@ fun TacticPromptCard(title: String, item: TacticalItem, accentColor: Color) {
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = ""${item.verbatim}"",
+            text = "\"${item.verbatim}\"",
             color = Color(0xFFF8FAFC),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,

@@ -129,15 +129,14 @@ class DeepgramLiveSocket(
                     }
 
                     // Format formatted sliding window string
-                    val formattedWindow = transcriptDeque.joinToString(separator = "
-") {
+                    val formattedWindow = transcriptDeque.joinToString(separator = "\n") {
                         val label = if (it.speaker == 0) "Recipient" else "Caller"
                         "[$label]: ${it.text}"
                     }
 
+                    val currentLabel = if (speaker == 0) "Recipient" else "Caller"
                     _slidingWindowTranscript.value = formattedWindow
-                    fullCallTranscriptAccumulator.append("[$label]: ${it.text}
-")
+                    fullCallTranscriptAccumulator.append("[$currentLabel]: $transcript\n")
                     onTranscriptUpdated(formattedWindow)
                 }
             }

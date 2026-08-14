@@ -28,9 +28,6 @@ class OverlayLifecycleOwner : LifecycleOwner, ViewModelStoreOwner, SavedStateReg
     fun onCreate() {
         savedStateRegistryController.performRestore(Bundle())
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    }
-
-    fun onStart() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
     }

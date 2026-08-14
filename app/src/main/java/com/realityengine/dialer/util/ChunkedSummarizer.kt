@@ -36,9 +36,8 @@ class ChunkedSummarizer(private val database: RealityDatabase) {
             return
         }
 
-        val fullText = rawTranscripts.joinToString("
-") { "[${it.speaker}]: ${it.text}" }
-        val words = fullText.split("\s+".toRegex())
+        val fullText = rawTranscripts.joinToString("\n") { "[${it.speaker}]: ${it.text}" }
+        val words = fullText.split(Regex("\\s+"))
 
         val chunks = mutableListOf<String>()
         var currentChunk = StringBuilder()
@@ -76,9 +75,7 @@ class ChunkedSummarizer(private val database: RealityDatabase) {
         }
 
         // Generate Master Executive Summary
-        val finalAggregated = intermediateSummaries.joinToString("
-
-")
+        val finalAggregated = intermediateSummaries.joinToString("\n\n")
         val summaryEntity = CallSummaryEntity(
             id = UUID.randomUUID().toString(),
             phoneNumber = phoneNumber,

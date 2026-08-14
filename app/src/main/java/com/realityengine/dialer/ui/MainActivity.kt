@@ -9,9 +9,9 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.FragmentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +32,7 @@ import com.realityengine.dialer.audio.AudioCaptureEngine
 import com.realityengine.dialer.worker.DatabaseCleanupWorker
 import rikka.shizuku.Shizuku
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val audioCaptureEngine by lazy { AudioCaptureEngine(this) }
 

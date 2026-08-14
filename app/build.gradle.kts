@@ -66,7 +66,12 @@ dependencies {
     // AndroidX & Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
+    implementation("androidx.savedstate:savedstate-ktx:1.2.1")
     implementation(libs.androidx.activity.compose)
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // Jetpack Compose (Material 3 Dark)
     implementation(platform(libs.androidx.compose.bom))
@@ -90,9 +95,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     // WorkManager (Database Maintenance)
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     // Coroutines & Concurrency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 }

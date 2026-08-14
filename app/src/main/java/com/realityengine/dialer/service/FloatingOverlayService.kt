@@ -120,7 +120,8 @@ class FloatingOverlayService : Service() {
         if (overlayComposeView != null) return
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        lifecycleOwner = OverlayLifecycleOwner().apply { performRestore(null) }
+        val owner = OverlayLifecycleOwner().apply { onCreate() }
+        lifecycleOwner = owner
 
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -141,8 +142,9 @@ class FloatingOverlayService : Service() {
         }
 
         overlayComposeView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(lifecycleOwner)
-            setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+            setViewTreeLifecycleOwner(owner)
+            setViewTreeSavedStateRegistryOwner(owner)
+            androidx.lifecycle.setViewTreeViewModelStoreOwner(owner)
             setContent {
                 RealityOverlayContent(
                     contactName = contactName,
@@ -155,10 +157,6 @@ class FloatingOverlayService : Service() {
                 )
             }
         }
-
-        lifecycleOwner?.handleLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_CREATE)
-        lifecycleOwner?.handleLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_START)
-        lifecycleOwner?.handleLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_RESUME)
 
         windowManager?.addView(overlayComposeView, layoutParams)
         Log.i(TAG, "Compose floating overlay inflated into SYSTEM_ALERT_WINDOW.")
@@ -210,7 +208,7 @@ class FloatingOverlayService : Service() {
 
         // 3. Remove Compose overlay from WindowManager
         overlayComposeView?.let { view ->
-            lifecycleOwner?.handleLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_DESTROY)
+            lifecycleOwner?.onDestroy()
             windowManager?.removeView(view)
             overlayComposeView = null
         }

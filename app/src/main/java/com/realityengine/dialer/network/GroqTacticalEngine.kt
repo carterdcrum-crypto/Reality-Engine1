@@ -125,8 +125,7 @@ Return ONLY valid JSON.
                         })
                         add(JsonObject().apply {
                             addProperty("role", "user")
-                            addProperty("content", "SLIDING 45s TRANSCRIPT:
-$slidingTranscript")
+                            addProperty("content", "SLIDING 45s TRANSCRIPT:\n$slidingTranscript")
                         })
                     }
                     add("messages", messages)
